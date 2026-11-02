@@ -21,7 +21,11 @@ const csp = [
   ...(isDev ? [] : ["upgrade-insecure-requests"]),
 ].join("; ");
 
+// On Vercel without an explicit NEXT_PUBLIC_SITE_URL: production uses the project domain, previews their own URL
+const vercelHost = process.env.VERCEL_ENV === "production" ? process.env.VERCEL_PROJECT_PRODUCTION_URL : process.env.VERCEL_URL;
+
 const nextConfig: NextConfig = {
+  ...(!process.env.NEXT_PUBLIC_SITE_URL && vercelHost ? { env: { NEXT_PUBLIC_SITE_URL: `https://${vercelHost}` } } : {}),
   cacheComponents: true,
   partialPrefetching: true,
   poweredByHeader: false,
